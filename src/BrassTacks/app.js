@@ -26,22 +26,16 @@
         run : function(win) {
 
             if (this.conf.components.authenticator) {
-                this.session = this.conf.components.authenticate(win, this.conf.provider);
+                this.session = this.conf.components.authenticator.authenticate(win, this.conf.provider);
             }
 
             if (this.conf.components.decorator) {
-                this.state = this.conf.components.decorate(win, this.conf.provider, this.session);
+                this.state = this.conf.components.decorator.decorate(win, this.conf.provider, this.session);
             }
 
             if (this.conf.components.router) {
-                this.conf.components.route(win, this.conf.provider, this.session, this.state);
+                this.conf.components.router.route(win.location.hash, this.conf.provider, this.session, this.state);
             }
-
-        },
-
-        dump : function() {
-
-
 
         }
 
