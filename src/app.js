@@ -46,7 +46,7 @@
             }
 
             //route
-            this.response = this.config.method.route(this.request);
+            this.response = this.config.method.route(this.request, this.session, this.state);
 
             //format
             if (this.config.method.format) {
