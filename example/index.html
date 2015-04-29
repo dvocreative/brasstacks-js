@@ -1,0 +1,65 @@
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+
+    <title>BrasstacksJS Example</title>
+    <meta name="author" content="DVOC">
+
+</head>
+
+<body>
+
+<script src="../src/brasstacks.js"></script>
+
+<script>
+
+    var bt = new BrassTacks({
+        container : window.document.body,
+        routes : [
+
+            {
+                url : '/',
+                controller : function() {
+
+                }
+            },
+
+            {
+                id : 'dashboard',
+                url : '/dashboard',
+                routes : [
+                    {
+                        id : 'add',
+                        url : '/add',
+                        controller : function() {
+
+                        }
+                    },
+                    {
+                        id : 'edit',
+                        url : '/edit/:id',
+                        controller : function(a) {
+
+                        },
+                        routes : [
+                            {
+                                url : '/whatever/:yah',
+                                controller : function(pars) {
+
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+
+        ]
+    });
+
+    bt.listen(window, true);
+
+
+</script>
+
+</body>
+</html>
