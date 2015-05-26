@@ -1,0 +1,32 @@
+{
+  "name": "brasstacks-js",
+  "version": "0.1.1",
+  "homepage": "https://github.com/dvocreative/brasstacks-js",
+  "authors": [
+    "Daniel O'Donnell <dan@dvoc.ca>"
+  ],
+  "description": "The minimalist JavaScript framework",
+  "main": "dist/brasstacks.min.js",
+  "moduleType": [
+    "amd",
+    "globals",
+    "node"
+  ],
+  "keywords": [
+    "javascript",
+    "framework",
+    "router"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dvocreative/brasstacksJS.git"
+  }
+}
