@@ -17,13 +17,13 @@
 
 })(this, function() {
 
-    var BTRoute = function(config, parent) {
+    var BTRoute = function(config, parentStack) {
 
-        this.controllerScope = this;
+        this.parentStack = parentStack;
 
-        this.parent = parent;
         this.children = [];
         this.redirect = false;
+        this.controllerScope = false;
 
         if (config) {
             this.build(config);
@@ -43,8 +43,8 @@
 
             if (this.url) {
 
-                if (this.parent) {
-                    this.url = this.parent.originalUrl + this.url;
+                if (this.parentStack.length) {
+                    this.url = this.parentStack[this.parentStack.length-1].originalUrl + this.url;
                 }
 
                 this.originalUrl = this.url;
@@ -74,7 +74,7 @@
             this.children.push(route);
         },
 
-        run : function(args, runParents, customRequestObj, customResponseObj, parentControllerReponse) {
+        run : function(BT, args, runParents, customRequestObj, customResponseObj, parentControllerResponse) {
 
             var controllerResponse = null;
 
@@ -83,12 +83,16 @@
                 return;
             }
 
-            if (runParents && this.parent) {
-                parentControllerReponse = this.parent.run(args, runParents, customRequestObj, customResponseObj, parentControllerReponse);
+            if (runParents && this.parentStack.length) {
+                for (var i = 0, len = this.parentStack.length; i < len; i++) {
+                    if (!BT.halted) {
+                        parentControllerResponse = this.parentStack[i].run(BT, args, false, customRequestObj, customResponseObj, parentControllerResponse);
+                    }
+                }
             }
 
-            if (this.controller && typeof(this.controller) === 'function') {
-                controllerResponse = this.controller.apply(this.controllerScope, [args, customRequestObj, customResponseObj, parentControllerReponse]);
+            if (!BT.halted && this.controller && typeof(this.controller) === 'function') {
+                controllerResponse = this.controller.apply(this.controllerScope || BT, [args, customRequestObj, customResponseObj, parentControllerResponse]);
             }
 
             return controllerResponse;
@@ -150,6 +154,8 @@
         this.routes = [];
         this.routesById = {};
 
+        this.halted = false;
+
         if (config) {
             this.add(config);
         }
@@ -171,7 +177,11 @@
             //add a route to the router
 
             if (typeof routeConfig.url === 'string' || routeConfig.id) {
-                route = this._processRoute(routeConfig, parent);
+                var stack = (parent && parent.parentStack.length) ? parent.parentStack.slice() : [];
+                if (parent) {
+                    stack.push(parent);
+                }
+                route = this._processRoute(routeConfig, stack);
             }
 
             //add children
@@ -179,10 +189,13 @@
             if (routeConfig.routes) {
 
                 for (var i = 0; i < routeConfig.routes.length; i++) {
+
                     var child = this.add(routeConfig.routes[i], route);
+
                     if (route && child) {
                         route.addChild(child);
                     }
+
                 }
 
             }
@@ -199,6 +212,8 @@
 
         route : function(urlOrRouteId, runParents, customRequestObj, customResponseObj) {
 
+            this.halted = false;
+
             if (urlOrRouteId === '') {
                 urlOrRouteId = '/';
             }
@@ -213,7 +228,7 @@
             }
 
             if (route) {
-                route.run(route.mapArgs(params), runParents, customRequestObj || {}, customResponseObj || {});
+                route.run(this, route.mapArgs(params), runParents, customRequestObj || {}, customResponseObj || {});
             }
 
         },
@@ -230,11 +245,15 @@
 
         },
 
+        halt : function() {
+            this.halted = true;
+        },
+
         /** Creates a new BTRoute object from a raw route config object **/
 
-        _processRoute : function(config, parent) {
+        _processRoute : function(config, parentStack) {
 
-            var route = new BTRoute(config, parent);
+            var route = new BTRoute(config, parentStack);
 
             this.routes.push(route);
 
