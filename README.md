@@ -48,4 +48,37 @@ var bt = new BrassTacks({
 			 ]
 		}
 	]
-	});
+	
+});
+
+```
+
+Initialized on a client-side environment...
+
+```javascript
+
+// hash change
+
+window.onhashchange = bt.getHashChangeHandler(window, true);
+
+// or maybe just manually...
+
+bt.route('dashboard');
+
+```
+
+Initialized on a server-side environment...
+
+```javascript
+
+require('http').createServer(function(req, res) {
+
+	bt.route(req.url, true, myRequestObject, myResponseObject);
+	
+	res.writeHead(200);
+	res.end(myResponseObject.hurl());
+
+});
+
+
+```
