@@ -68,10 +68,10 @@ Initialized on a server-side environment...
 
 require('http').createServer(function(req, res) {
 
-	bt.route(req.url, myRequestObject, myResponseObject);
+	bt.route(req.url, { request : myReqObj, response : myRespObj });
 	
 	res.writeHead(200);
-	res.end(myResponseObject.hurl());
+	res.end(myRespObj.hurl());
 
 });
 
