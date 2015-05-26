@@ -14,7 +14,6 @@
 <script>
 
     var bt = new BrassTacks({
-        container : window.document.body,
         routes : [
 
             {
@@ -27,6 +26,9 @@
             {
                 id : 'dashboard',
                 url : '/dashboard',
+                controller : function() {
+                    alert('wefwf');
+                },
                 routes : [
                     {
                         id : 'add',
@@ -56,7 +58,7 @@
         ]
     });
 
-    bt.listen(window, true);
+    window.onhashchange = bt.getHashChangeHandler(window, true);
 
 
 </script>

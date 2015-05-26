@@ -19,8 +19,11 @@
 
     var BTRoute = function(config, parent) {
 
+        this.controllerScope = this;
+
         this.parent = parent;
         this.children = [];
+        this.redirect = false;
 
         if (config) {
             this.build(config);
@@ -29,16 +32,6 @@
     };
 
     BTRoute.prototype = {
-
-        getId : function() {
-
-            return this.id || false;
-
-        },
-
-        getUrl : function() {
-            return this.url;
-        },
 
         build : function(config) {
 
@@ -65,6 +58,12 @@
 
         },
 
+        getId : function() {
+
+            return this.id || false;
+
+        },
+
         matchTo : function(urlToCompare) {
 
             return urlToCompare.match(this.url);
@@ -75,32 +74,28 @@
             this.children.push(route);
         },
 
-        run : function(args, runParents, BT) {
+        run : function(args, runParents, customRequestObj, customResponseObj, parentControllerReponse) {
 
-            var response = false;
-
-            if (runParents) {
-                this.parent.run(args);
-            }
-
-            args = this._mapArgs(args);
-
-            if (this.controller) {
-                response = this.controller.apply(BT, [args]);
-            }
+            var controllerResponse = null;
 
             if (this.redirect) {
-                BT.route(this.redirect);
+                BT.route(this.redirect, runParents, customRequestObj, customResponseObj);
+                return;
             }
 
-            if (response && this.parent && this.parent.container) {
-                this.parent.container.innerHTML = '';
-                this.parent.container.appendChild()
+            if (runParents && this.parent) {
+                parentControllerReponse = this.parent.run(args, runParents, customRequestObj, customResponseObj, parentControllerReponse);
             }
+
+            if (this.controller && typeof(this.controller) === 'function') {
+                controllerResponse = this.controller.apply(this.controllerScope, [args, customRequestObj, customResponseObj, parentControllerReponse]);
+            }
+
+            return controllerResponse;
 
         },
 
-        _mapArgs : function(args) {
+        mapArgs : function(args) {
 
             var mapped = {};
 
@@ -133,7 +128,8 @@
                 }
             }
 
-            route = route.replace(escapeRegExp, '\\$&')
+            route = route
+                .replace(escapeRegExp, '\\$&')
                 .replace(optionalParam, '(?:$1)?')
                 .replace(namedParam, function(match, optional) {
                     return optional ? match : '([^/?]+)';
@@ -144,23 +140,6 @@
                 url : new RegExp('^' + route + '(?:\\?([\\s\\S]*))?$'),
                 params : params
             };
-
-        }
-
-    };
-
-    var BTRequest = function() {
-
-
-
-    };
-
-    BTRequest.prototype = {
-
-        buildFromWindow : function(win) {
-
-            this.window = win;
-
 
         }
 
@@ -178,6 +157,12 @@
     };
 
     BrassTacks.prototype = {
+
+        /**
+         * Adds a route configuration to the BT instance
+         * @param {object} routeConfig - Route configuration (see documentation)
+         * @param {object} [parent] - If this route is nested, pass in its parent BTRoute for upward referencing
+         */
 
         add : function(routeConfig, parent) {
 
@@ -206,11 +191,13 @@
 
         },
 
-        route : function(urlOrRouteId, runParents) {
+        /**
+         * Triggers a route by either URL or ID, if a matching BTRoute exists
+         * @param {string} urlOrRouteId - Either a route's ID, or a URL
+         * @param {boolean} [runParents] - If the route is nested, whether to run its parent routes first
+         */
 
-            /*if (!requestOrurlOrRouteId.url) {
-                requestOrurlOrRouteId = new BTRequest();
-            }*/
+        route : function(urlOrRouteId, runParents, customRequestObj, customResponseObj) {
 
             if (urlOrRouteId === '') {
                 urlOrRouteId = '/';
@@ -226,27 +213,24 @@
             }
 
             if (route) {
-                route.run(params, runParents, this);
+                route.run(route.mapArgs(params), runParents, customRequestObj || {}, customResponseObj || {});
             }
 
         },
 
-        listen : function(win, routeOnStart) {
-            var self = this;
+        /** Grabs a function to be assigned to window.onHashChange, for use in browser of course */
 
-            if (routeOnStart || (typeof routeOnStart === 'undefined')) {
-                self.route(win.location.hash.substr(1));
-            }
+        getHashChangeHandler : function(win, runParents, customRequestObj, customResponseObj) {
 
-            if (typeof win.onhashchange !== 'undefined') {
-                win.onhashchange = function(){
-                    //var req = new BTRequest();
-                    //req.buildFromWindow(win);
-                    self.route(win.location.hash.substr(1));
+            return (function(win, btInstance){
+                return function() {
+                    btInstance.route(win.location.hash.substr(1), runParents, customRequestObj, customResponseObj);
                 };
-            }
+            })(win, this);
 
         },
+
+        /** Creates a new BTRoute object from a raw route config object **/
 
         _processRoute : function(config, parent) {
 
@@ -263,6 +247,8 @@
             return route;
 
         },
+
+        /** Identifies the route to run (if any) when a route-by-URL is triggered **/
 
         _parseUrl : function(urlString) {
 
