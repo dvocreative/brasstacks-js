@@ -183,7 +183,6 @@
                     stack.push(parent);
                 }
                 route = this._processRoute(routeConfig, stack);
-                console.log(route);
             }
 
             //add children
@@ -209,29 +208,41 @@
         /**
          * Triggers a route by either URL or ID, if a matching BTRoute exists
          * @param {string} urlOrRouteId - Either a route's ID, or a URL
-         * @param {boolean} [payload] - If the route is nested, whether to run its parent routes first
+         * @param {object} [payload] - An object containing a custom payload to be pass through the route execution
          */
 
         route : function(urlOrRouteId, payload) {
 
             this.halted = false;
 
-            var route = this.routesById[urlOrRouteId],
-                params = null;
+            var splitUrlorId = urlOrRouteId.split('&');
 
-            if (!route) {
-                var parsed = this._parseUrl(urlOrRouteId);
-                route = parsed[0];
-                params = parsed[1];
-            }
+            for (var i = 0, len = splitUrlorId.length; i < len; i++) {
 
-            if (route) {
-                route.run(this, route.mapArgs(params), payload || {});
+                var route = null,
+                    params = null;
+
+                route = this.routesById[splitUrlorId[i]];
+
+                if (!route) {
+                    var parsed = this._parseUrl(splitUrlorId[i]);
+                    route = parsed[0];
+                    params = parsed[1];
+                }
+
+                if (route) {
+                    route.run(this, route.mapArgs(params), payload || {});
+                }
+
             }
 
         },
 
-        /** Grabs a function to be assigned to window.onHashChange, for use in browser of course */
+        /**
+         * Grabs a function to be assigned to window.onHashChange, for use in browser of course
+         * @param {Object} win - Reference to the browser's root (window) object
+         * @param {Object} [payload] - An object containing a custom payload to be pass through the route execution
+         */
 
         getHashChangeHandler : function(win, payload) {
 
@@ -243,11 +254,19 @@
 
         },
 
+        /**
+         * Callable within route controllers, used to halt propagation through a stack of parents
+         */
+
         halt : function() {
             this.halted = true;
         },
 
-        /** Creates a new BTRoute object from a raw route config object **/
+        /**
+         * Creates a new BTRoute instance, adds
+         * @param {Object} config - The route's configuration
+         * @param {Object} [parentStack] - An array of references to all parents, ordered by oldest parent first
+         */
 
         _processRoute : function(config, parentStack) {
 
@@ -265,7 +284,10 @@
 
         },
 
-        /** Identifies the route to run (if any) when a route-by-URL is triggered **/
+        /**
+         * Identifies the route to run (if any) when a route-by-URL is triggered
+         * @param {string} urlString - An incoming URL, potentially with parameters
+         */
 
         _parseUrl : function(urlString) {
 

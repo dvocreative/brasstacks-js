@@ -32,7 +32,8 @@
                         url : '/add',
                         controller : function() {
 
-                        }
+                        },
+                        runParentRoutes : true
                     },
                     {
                         id : 'edit',
@@ -44,7 +45,7 @@
                         routes : [
                             {
                                 url : '/whatever/:yah',
-                                controller : function(pars) {
+                                controller : function(pars, something) {
 
                                 }
                             }
