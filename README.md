@@ -11,14 +11,12 @@ If you're like me, most of your JavaScript apps start with a router that trigger
 
 var bt = new BrassTacks({
 
-	routes : [
+	 url : '',
+	 controller : function() {
+		// do some app-wide stuff!
+	 },
 
-		{
-			 url : '/',
-			 controller : function() {
-				// do some homepage stuff!
-			 }
-		},
+	routes : [
 	
 		{
 			 id : 'dashboard',
@@ -59,7 +57,7 @@ Initialized on a client-side environment...
 
 // hash change
 
-window.onhashchange = bt.getHashChangeHandler(window, true);
+window.onhashchange = bt.getHashChangeHandler(window);
 
 // or maybe just manually...
 
@@ -73,7 +71,7 @@ Initialized on a server-side environment...
 
 require('http').createServer(function(req, res) {
 
-	bt.route(req.url, true, myRequestObject, myResponseObject);
+	bt.route(req.url, myRequestObject, myResponseObject);
 	
 	res.writeHead(200);
 	res.end(myResponseObject.hurl());
