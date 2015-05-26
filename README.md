@@ -200,6 +200,16 @@ Route controllers are passed three arguments:
 
 #### Nested Routes
 
+TBC
+
+#### Parent Controllers
+
+TBC
+
+#### Simultaneous Routing
+
+TBC
+
 
 ### License
 
