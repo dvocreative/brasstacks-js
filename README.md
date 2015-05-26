@@ -12,8 +12,8 @@ If you're like me, most of your JavaScript apps start with a router that trigger
 var bt = new BrassTacks({
 
 	 url : '',
-	 controller : function() {
-		// do some app-wide stuff!
+	 controller : function(pars, someCustomAppPayload) {
+		someCustomAppPayload.logger.log(someCustomAppPayload.request);
 	 },
 
 	routes : [
@@ -21,9 +21,8 @@ var bt = new BrassTacks({
 		{
 			 id : 'dashboard',
 			 url : '/dashboard',
-			 controller : function(pars, request) {
-			 		// custom request/response objects let you do whatever you want
-					if (!request.isAuthenticated()) {
+			 controller : function(pars, someCustomAppPayload) {
+					if (!someCustomAppPayload.isAuthenticated()) {
 						this.halt();
 					}
 			 },
@@ -32,15 +31,13 @@ var bt = new BrassTacks({
 				  {
 						id : 'add',
 						url : '/add',
-						controller : function(pars, request, response) {
-							// do some add page stuff, then probably modify the response obj
-						}
+						controller : myAddControllerRef
 				  },
 				  
 				  {
 						id : 'remove',
 						url : '/remove/:id',
-						controller : myReferencedRemoveController
+						controller : myRemoveControllerRef
 				  }
 				  
 			 ]
