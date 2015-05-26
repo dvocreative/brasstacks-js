@@ -59,7 +59,9 @@ Initialized on a client-side environment...
 
 // hash change
 
-window.onhashchange = bt.getHashChangeHandler(window);
+window.onhashchange = function() {
+    bt.route(window.location.hash.substr(1));
+};
 
 // or maybe just manually...
 
