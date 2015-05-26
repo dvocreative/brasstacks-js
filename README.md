@@ -127,6 +127,11 @@ var bt = new BrassTacks({
 <a name="usage"></a>
 ### Usage
 
+#### URL formats
+
+BrassTacks URL parsing is leveraged from the Backbone.js Router's RegEx matching. So you should be able to use the same URL formats
+found here: [http://backbonejs.org/#Router-routes](http://backbonejs.org/#Router-routes)
+
 #### Triggering a route
 
 BrassTacks doesn't attempt to automatically trigger routes. However, it does make it easy to do things like listen to hash changes or trigger a route manually.
@@ -150,9 +155,54 @@ window.onhashchange = function() {
 
 ```
 
+The `route()` method also takes in a second argument, a `payload`, described below.
+
+#### Passing in a payload
+
+Odds are whatever business logic your routes trigger will need to read from a current state, assemble some kind of response, manipulate some other data,
+change the DOM, render a template, etc., etc.. By passing a payload of your choosing you can ensure your route controllers have reference to everythign they need.
+
+As an example, you might as a minimum want to have a response object as your payload:
+
+``` javascript
+
+var response = {
+	success : false,
+	data : []
+};
+
+bt.route('page1', response);
+
+```
+
+As documented in the next section, your payload (`response` in this case) will be available in your route's controller.
+
+
 #### Controllers
 
+Unless it's a redirect, odds are you want your route to actually trigger some functionality. That's what the controller is for.
+You can pass any function in to the route's `controller` property, and it will be called in the context of the BT instance by default, or you
+may specify your own context by setting the `controllerScope` property.
 
+Route controllers are passed three arguments:
 
+```javascript
+
+{
+	controller : function (arg1, arg2, arg3) {
+		// arg1 : if your URL had parameters, i.e. /edit/:id/, you'd have a key-mapped object available here
+		// arg2 : your payload reference. If no payload was passed this is an empty object that will persist through any parent controllers
+		// arg3 : if a parent controller was called before this and it returned a value, this value will be available here
+	}
+}
+
+```
+
+**  ** - If your URL had parameters, i.e. /edit/:id/, you'd have a key-mapped object available here
 
 #### Nested Routes
+
+
+### License
+
+Use of BrasstacksJS is governed by the [MIT Software License](http://opensource.org/licenses/MIT).
