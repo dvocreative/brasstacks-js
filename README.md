@@ -162,7 +162,7 @@ The `route()` method also takes in a second argument, a `payload`, described bel
 Odds are whatever business logic your routes trigger will need to read from a current state, assemble some kind of response, manipulate some other data,
 change the DOM, render a template, etc., etc.. By passing a payload of your choosing you can ensure your route controllers have reference to everythign they need.
 
-As an example, you might as a minimum want to have a response object as your payload:
+As a very minimal example you might want to have a response object as your payload:
 
 ``` javascript
 
@@ -197,8 +197,6 @@ Route controllers are passed three arguments:
 }
 
 ```
-
-**  ** - If your URL had parameters, i.e. /edit/:id/, you'd have a key-mapped object available here
 
 #### Nested Routes
 
