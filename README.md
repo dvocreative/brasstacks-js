@@ -11,5 +11,41 @@ If you're like me, most of your JavaScript apps start with a router that trigger
 
 var bt = new BrassTacks({
 
+	routes : [
 
-});
+		{
+			 url : '/',
+			 controller : function() {
+				// do some homepage stuff!
+			 }
+		},
+	
+		{
+			 id : 'dashboard',
+			 url : '/dashboard',
+			 controller : function(pars, request) {
+			 		// custom request/response objects let you do whatever you want
+					if (!request.isAuthenticated()) {
+						this.halt();
+					}
+			 },
+			 routes : [
+			 
+				  {
+						id : 'add',
+						url : '/add',
+						controller : function(pars, request, response) {
+							// do some add page stuff, then probably modify the response obj
+						}
+				  },
+				  
+				  {
+						id : 'remove',
+						url : '/remove/:id',
+						controller : myReferencedRemoveController
+				  }
+				  
+			 ]
+		}
+	]
+	});
