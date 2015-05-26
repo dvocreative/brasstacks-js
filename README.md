@@ -163,7 +163,7 @@ Odds are whatever business logic your routes trigger will need to read from a cu
 change the DOM, render a template, etc., etc.. By passing a payload of your choosing you can ensure your route controllers have reference to everythign they need.
 
 As a very minimal example you might want to have a response object as your payload:
-
+ ---
 ``` javascript
 
 var response = {
