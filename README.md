@@ -3,6 +3,7 @@ That minimal, low-magic, low-sugar, high-versatility JavaScript 'framework' you'
 
 [Motivation](#motivation)
 [Configuration](#configuration)
+[Usage](#usage)
 
 <a name="motivation"></a>
 ### Motivation
@@ -97,6 +98,9 @@ definition. However, you needn't actually specify an ID or URL for this parent r
 
 var bt = new BrassTacks({
 
+	// url : '',
+	// id : 'global',
+
 	routes : [
 	
 		{
@@ -122,3 +126,33 @@ var bt = new BrassTacks({
 
 <a name="usage"></a>
 ### Usage
+
+#### Triggering a route
+
+BrassTacks doesn't attempt to automatically trigger routes. However, it does make it easy to do things like listen to hash changes or trigger a route manually.
+
+```javascript
+
+// trigger a route manually, by its ID
+
+bt.route('page1');
+
+// trigger a route manually, by URL
+
+bt.route('/dashboard/edit/123');
+
+// trigger on hash change
+
+window.onhashchange = function() {
+	//Note that BT does NOT strip out the '#' for you
+	bt.route(window.location.hash.substr(1));
+};
+
+```
+
+#### Controllers
+
+
+
+
+#### Nested Routes
