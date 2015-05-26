@@ -24,6 +24,7 @@
         this.children = [];
         this.redirect = false;
         this.controllerScope = false;
+        this.runParentRoutes = false;
 
         if (config) {
             this.build(config);
@@ -41,7 +42,7 @@
                 }
             }
 
-            if (this.url) {
+            if (typeof this.url === 'string') {
 
                 if (this.parentStack.length) {
                     this.url = this.parentStack[this.parentStack.length-1].originalUrl + this.url;
@@ -74,25 +75,25 @@
             this.children.push(route);
         },
 
-        run : function(BT, args, runParents, customRequestObj, customResponseObj, parentControllerResponse) {
+        run : function(BT, args, payload, parentControllerResponse) {
 
             var controllerResponse = null;
 
             if (this.redirect) {
-                BT.route(this.redirect, runParents, customRequestObj, customResponseObj);
+                BT.route(this.redirect, payload);
                 return;
             }
 
-            if (runParents && this.parentStack.length) {
+            if (this.runParentRoutes && this.parentStack.length) {
                 for (var i = 0, len = this.parentStack.length; i < len; i++) {
                     if (!BT.halted) {
-                        parentControllerResponse = this.parentStack[i].run(BT, args, false, customRequestObj, customResponseObj, parentControllerResponse);
+                        parentControllerResponse = this.parentStack[i].run(BT, args, false, payload, parentControllerResponse);
                     }
                 }
             }
 
             if (!BT.halted && this.controller && typeof(this.controller) === 'function') {
-                controllerResponse = this.controller.apply(this.controllerScope || BT, [args, customRequestObj, customResponseObj, parentControllerResponse]);
+                controllerResponse = this.controller.apply(this.controllerScope || BT, [args, payload, parentControllerResponse]);
             }
 
             return controllerResponse;
@@ -177,11 +178,12 @@
             //add a route to the router
 
             if (typeof routeConfig.url === 'string' || routeConfig.id) {
-                var stack = (parent && parent.parentStack.length) ? parent.parentStack.slice() : [];
+                var stack = (parent && parent.parentStack.length && !parent.resetParentStack) ? parent.parentStack.slice() : [];
                 if (parent) {
                     stack.push(parent);
                 }
                 route = this._processRoute(routeConfig, stack);
+                console.log(route);
             }
 
             //add children
@@ -207,16 +209,12 @@
         /**
          * Triggers a route by either URL or ID, if a matching BTRoute exists
          * @param {string} urlOrRouteId - Either a route's ID, or a URL
-         * @param {boolean} [runParents] - If the route is nested, whether to run its parent routes first
+         * @param {boolean} [payload] - If the route is nested, whether to run its parent routes first
          */
 
-        route : function(urlOrRouteId, runParents, customRequestObj, customResponseObj) {
+        route : function(urlOrRouteId, payload) {
 
             this.halted = false;
-
-            if (urlOrRouteId === '') {
-                urlOrRouteId = '/';
-            }
 
             var route = this.routesById[urlOrRouteId],
                 params = null;
@@ -228,18 +226,18 @@
             }
 
             if (route) {
-                route.run(this, route.mapArgs(params), runParents, customRequestObj || {}, customResponseObj || {});
+                route.run(this, route.mapArgs(params), payload || {});
             }
 
         },
 
         /** Grabs a function to be assigned to window.onHashChange, for use in browser of course */
 
-        getHashChangeHandler : function(win, runParents, customRequestObj, customResponseObj) {
+        getHashChangeHandler : function(win, payload) {
 
             return (function(win, btInstance){
                 return function() {
-                    btInstance.route(win.location.hash.substr(1), runParents, customRequestObj, customResponseObj);
+                    btInstance.route(win.location.hash.substr(1), payload);
                 };
             })(win, this);
 

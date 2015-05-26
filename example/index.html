@@ -14,20 +14,18 @@
 <script>
 
     var bt = new BrassTacks({
+        url : '',
+        controller : function() {
+            alert('boooo');
+        },
         routes : [
-            {
-                url : '/',
-                controller : function() {
-
-                }
-            },
-
             {
                 id : 'dashboard',
                 url : '/dashboard',
                 controller : function() {
-
+                    alert('ya');
                 },
+                resetParentStack : true,
                 routes : [
                     {
                         id : 'add',
@@ -42,6 +40,7 @@
                         controller : function(a) {
 
                         },
+                        runParentRoutes : true,
                         routes : [
                             {
                                 url : '/whatever/:yah',
@@ -56,7 +55,7 @@
         ]
     });
 
-    window.onhashchange = bt.getHashChangeHandler(window, true);
+    window.onhashchange = bt.getHashChangeHandler(window);
 
 
 </script>
