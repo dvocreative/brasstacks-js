@@ -1,9 +1,9 @@
 # BrasstacksJS
 That minimal, low-magic, low-sugar, high-versatility JavaScript 'framework' you've always wanted. And yes, it works on both the browser and server.
 
-[Motivation](#motivation)
-[Configuration](#configuration)
-[Usage](#usage)
+* [Motivation](#motivation)
+* [Configuration](#configuration)
+* [Usage](#usage)
 
 <a name="motivation"></a>
 ### Motivation
@@ -149,7 +149,7 @@ bt.route('/dashboard/edit/123');
 // trigger on hash change
 
 window.onhashchange = function() {
-	//Note that BT does NOT strip out the '#' for you
+	// Note that BT does NOT strip out the '#' for you
 	bt.route(window.location.hash.substr(1));
 };
 
@@ -200,16 +200,128 @@ Route controllers are passed three arguments:
 
 #### Nested Routes
 
-TBC
+Nesting happens naturally with BrassTacks. Every route has an optional `routes` property that is an array of child routes.
+
+When using a nested route, its URL is automatically prepended with the URL(s) of its parents, similarly to [Angular UI Router](https://github.com/angular-ui/ui-router).
+
+So in the following example,
+
+```javascript
+
+{
+	url : "/team",
+	routes : [
+		{
+			url : "/john"
+		}
+	]
+}
+
+```
+
+you would access the nested route with `/team/john`.
+
 
 #### Parent Controllers
 
-TBC
+The real power of nested routes comes from the ability to execute that route's parent controller(s).
+
+In a way, you can think of nested routes in BrassTacks as extending classes in most programming languages; each can invoke the parent's constructor, and it it's own parents', etc..
+
+By default, routes *do not* trigger their parent controllers. To turn this on, simply set `runParentRoutes : true`.
+
+##### Order of the Parent Stack
+
+In BrassTacks, **a stack of parent controllers runs from the oldest parent to youngest; in other words, the controller of the called route will be last to run**.
+This ordering allows requests to more naturally proceed through the routing stack, allowing you to perhaps halt a request before it reaches the very specific logic of your
+called route. A common usage for this would be to ensure authentication was checked at an appropriate parent before child routes are called.
+
+##### Passing data between parent controllers
+
+There are two ways to persist data along a stack of parent controllers. The first is to simply use a *payload*, as described above, since the payload you pass in will be
+passed by referenced through all controllers and therefore each will be seeing the latest modified reference. 
+
+```javascript
+
+{
+	url : '/a',
+	controller : function(params, payload) {
+		payload.foo = 'bar';
+	},
+	routes : [
+		url : '/b',
+		runParentRoutes : true,
+		controller : function(params, payload) {
+			//returns 'barnone' to the result of the initial route() call
+			return payload.foo + 'none';
+		}
+	]
+}
+
+```
+
+The second method is to have controllers return a value. If a controller returns a value, the next controller in the execution stack will receive that value as its third argument.
+
+```javascript
+
+{
+	url : '/a',
+	controller : function() {
+		return 'foo';
+	},
+	routes : [
+		url : '/b',
+		runParentRoutes : true,
+		controller : function(params, payload, lastReturn) {
+			//returns 'foobar' to the result of the initial route() call
+			return lastReturn + 'bar';
+		}
+	]
+}
+
+```
+
+##### Overriding the depth of a parent stack
+
+Perhaps you don't want *all* of your parent routes to be called for a particular hierarchy of routes. BrassTacks allows you to 'reset' the parent stack
+at any point using the `resetParentStack` parameter.
+
+```javascript
+
+{
+	url : '/a',
+	controller : function() {
+		// ...
+	},
+	routes : [
+		url : '/b',
+		resetParentStack : true,
+		controller : function() {
+			// ...
+		},
+		routes : [
+			url : '/c',
+			runParentRoutes : true,
+			controller : function() {
+				// ...
+			}
+		]
+	]
+}
+
+```
+
+In the above example, hitting `/a/b/c` will call the controllers for `/b` and `/c`, but not `/a`.
+
 
 #### Simultaneous Routing
 
-TBC
+Complex front-end applications may have multiple route-enabled applications operating alongside each other. BrassTacks offers an ability to handle this
+problem simply by allowing multiple URLs within a single hash.
 
+`http://myapp.com/#/dashboard/profile&/ticker/add`
+
+By passing in `/dashboard/profile&/ticker/add` to `route()`, BrassTacks will split on the `&` and run any matching routes for both `/dashboard/profile` and `/ticker/add`. Fun!
 
 ### License
 
