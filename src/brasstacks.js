@@ -24,7 +24,7 @@
         this.children = [];
         this.redirect = false;
         this.controllerScope = false;
-        this.runParentRoutes = false;
+        this.runParentRoutes = true;
 
         if (config) {
             this.build(config);

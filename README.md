@@ -118,7 +118,7 @@ var bt = new BrassTacks({
 			controller : function(parameters, payload, returnValueFromParentController) {
 				// context inside this controller is the BrassTacks instance by default
 			},
-			runParentRoutes : false					//OPTIONAL Run any parents controllers before running this one; runs from the highest-level parent downwards
+			runParentRoutes : true					//OPTIONAL Run any parents controllers before running this one; runs from the highest-level parent downwards
 			resetParentStack : false				//OPTIONAL Resets the parent stack; this route nor any below it will run parents above this point
 			controllerScope : someOtherObj		//OPTIONAL only for changing the scope the controller executes in,
 			redirect : 'page99'						//OPTIONAL make this route immediately execute another route, by ID or URL
@@ -251,7 +251,7 @@ The real power of nested routes comes from the ability to execute that route's p
 
 In a way, you can think of nested routes in BrassTacks as extending classes in most programming languages; each can invoke the parent's constructor, and it it's own parents', etc..
 
-By default, routes *do not* trigger their parent controllers. To turn this on, simply set `runParentRoutes : true`.
+By default, routes *do* trigger their parent controllers. To turn this off, simply set `runParentRoutes : false`.
 
 ##### Order of the Parent Stack
 
