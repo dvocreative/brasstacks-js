@@ -207,6 +207,20 @@ Route controllers are passed three arguments:
 
 ```
 
+#### Handling matchless requests
+
+When the URL or ID passed to `route()` did not find a match, it can trigger an optional callback passable as its third parameter. The 
+callback is called with the unmatched string as its argument, and could be called multiple times if multiple faulty routes exist (i.e. in simultaneous routing mode).
+
+```javascript
+
+bt.route('/my/bad/url', payload, function(str){
+	console.log('Whoops, ' + str + ' did not match any routes.');
+	payload.request.handle404(str);
+});
+
+```
+
 #### Nested Routes
 
 Nesting happens naturally with BrassTacks. Every route has an optional `routes` property that is an array of child routes.

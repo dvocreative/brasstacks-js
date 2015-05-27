@@ -211,7 +211,7 @@
          * @param {object} [payload] - An object containing a custom payload to be pass through the route execution
          */
 
-        route : function(urlOrRouteId, payload) {
+        route : function(urlOrRouteId, payload, notFoundCb) {
 
             this.halted = false;
 
@@ -232,6 +232,8 @@
 
                 if (route) {
                     route.run(this, route.mapArgs(params), payload || {});
+                } else if (notFoundCb) {
+                    notFoundCb(splitUrlorId[i]);
                 }
 
             }

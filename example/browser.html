@@ -56,7 +56,11 @@
         ]
     });
 
-    window.onhashchange = bt.getHashChangeHandler(window);
+    window.onhashchange = function() {
+        bt.route(window.location.hash.substr(1), {}, function(str){
+            console.log('shiz!' + str);
+        });
+    };
 
 
 </script>
