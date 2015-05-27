@@ -75,7 +75,7 @@
             this.children.push(route);
         },
 
-        run : function(BT, args, payload, parentControllerResponse) {
+        run : function(BT, args, payload, parentControllerResponse, overrideRunParents) {
 
             var controllerResponse = null;
 
@@ -84,10 +84,10 @@
                 return;
             }
 
-            if (this.runParentRoutes && this.parentStack.length) {
+            if (!overrideRunParents && this.runParentRoutes && this.parentStack.length) {
                 for (var i = 0, len = this.parentStack.length; i < len; i++) {
                     if (!BT.halted) {
-                        parentControllerResponse = this.parentStack[i].run(BT, args, payload, parentControllerResponse);
+                        parentControllerResponse = this.parentStack[i].run(BT, args, payload, parentControllerResponse, true);
                     }
                 }
             }
@@ -178,11 +178,12 @@
             //add a route to the router
 
             if (typeof routeConfig.url === 'string' || routeConfig.id) {
-                var stack = (parent && parent.parentStack.length && !parent.resetParentStack) ? parent.parentStack.slice() : [];
+                //TODO this is gross code
+                var stack = (parent && parent.parentStack.length) ? parent.parentStack.slice() : [];
                 if (parent) {
                     stack.push(parent);
                 }
-                route = this._processRoute(routeConfig, stack);
+                route = this._processRoute(routeConfig, ((typeof routeConfig.runParentRoutes !== 'undefined' && routeConfig.runParentRoutes === false) ? [] : stack));
             }
 
             //add children

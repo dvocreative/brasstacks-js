@@ -119,7 +119,6 @@ var bt = new BrassTacks({
 				// context inside this controller is the BrassTacks instance by default
 			},
 			runParentRoutes : true					//OPTIONAL Run any parents controllers before running this one; runs from the highest-level parent downwards
-			resetParentStack : false				//OPTIONAL Resets the parent stack; this route nor any below it will run parents above this point
 			controllerScope : someOtherObj		//OPTIONAL only for changing the scope the controller executes in,
 			redirect : 'page99'						//OPTIONAL make this route immediately execute another route, by ID or URL
 			routes : [ ... ]							//OPTIONAL specify an array of child routes
@@ -306,8 +305,8 @@ The second method is to have controllers return a value. If a controller returns
 
 ##### Overriding the depth of a parent stack
 
-Perhaps you don't want *all* of your parent routes to be called for a particular hierarchy of routes. BrassTacks allows you to 'reset' the parent stack
-at any point using the `resetParentStack` parameter.
+Perhaps you don't want *all* of your parent routes to be called for a particular hierarchy of routes. By setting `runParentRoutes : false`, not only
+will that route, if called, not execute its parents, but any children of that route will only call *up to that routes*.
 
 ```javascript
 
@@ -318,7 +317,7 @@ at any point using the `resetParentStack` parameter.
 	},
 	routes : [
 		url : '/b',
-		resetParentStack : true,
+		runParentRoutes : false,
 		controller : function() {
 			// ...
 		},

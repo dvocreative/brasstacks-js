@@ -16,16 +16,16 @@
     var bt = new BrassTacks({
         url : '',
         controller : function() {
-            console.log('hit any url');
+            alert('boi');
         },
         routes : [
             {
                 id : 'dashboard',
                 url : '/dashboard',
+                runParentRoutes : false,
                 controller : function() {
                     alert('ya');
                 },
-                resetParentStack : true,
                 routes : [
                     {
                         id : 'add',
@@ -40,7 +40,6 @@
                         controller : function(a) {
 
                         },
-                        runParentRoutes : true,
                         routes : [
                             {
                                 url : '/whatever/:yah',
