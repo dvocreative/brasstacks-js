@@ -87,7 +87,7 @@
             if (this.runParentRoutes && this.parentStack.length) {
                 for (var i = 0, len = this.parentStack.length; i < len; i++) {
                     if (!BT.halted) {
-                        parentControllerResponse = this.parentStack[i].run(BT, args, false, payload, parentControllerResponse);
+                        parentControllerResponse = this.parentStack[i].run(BT, args, payload, parentControllerResponse);
                     }
                 }
             }
