@@ -2,7 +2,7 @@
   "name": "brasstacks-js",
   "version": "0.1.2",
   "description": "The minimalist JavaScript framework",
-  "main": "brasstacks.js",
+  "main": "dist/brasstacks.min.js",
   "directories": {
     "example": "example"
   },
