@@ -243,7 +243,7 @@
                         hooks.afterRoute.apply(this, [splitUrlorId[i], mappedArgs, payload]);
                     }
                 } else if (hooks && hooks.notFound) {
-                    hooks.notFound.apply(this, [splitUrlorId[i]]);
+                    hooks.notFound.apply(this, [splitUrlorId[i], payload]);
                 }
 
             }

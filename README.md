@@ -228,7 +228,7 @@ bt.route('/my/bad/url/:id', payload, {
 	afterRoute : function(urlStr, urlParameters, payload) {
 		
 	},
-	notFound : function(urlStr) {
+	notFound : function(urlStr, payload) {
 		console.log('Whoops, ' + urlStr + ' did not match any routes.');
 	}
 });
