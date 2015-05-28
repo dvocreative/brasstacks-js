@@ -135,6 +135,14 @@ var bt = new BrassTacks({
 <a name="usage"></a>
 ### Usage
 
+The main trigger method for BrassTacks is `route()`, which has the following format:
+
+```javascript
+
+bt.route('url-string-or-ID', [ payload ], [ { beforeRoute : someBeforeRouteHook, afterRoute : someAfterRouteHook, notFound : someNotFoundHook } ]);
+
+```
+
 #### URL formats
 
 BrassTacks URL parsing is leveraged from the Backbone.js Router's RegEx matching. So you should be able to use the same URL formats
@@ -206,19 +214,28 @@ Route controllers are passed three arguments:
 
 ```
 
-#### Handling matchless requests
+#### Hooks: Before, After and Not Found
 
-When the URL or ID passed to `route()` did not find a match, it can trigger an optional callback passable as its third parameter. The 
-callback is called with the unmatched string as its argument, and could be called multiple times if multiple faulty routes exist (i.e. in simultaneous routing mode).
+You can specify optional hooks in your `route()` request to be triggered before routing starts, after it finishes, and/or when a route is not found.
+These hooks are passed in as the third parameter of `route()`, have the BT instance as their context, and are passed the following arguments:
 
 ```javascript
 
-bt.route('/my/bad/url', payload, function(str){
-	console.log('Whoops, ' + str + ' did not match any routes.');
-	payload.request.handle404(str);
+bt.route('/my/bad/url/:id', payload, {
+	beforeRoute : function(urlStr, urlParameters, payload) {
+		
+	},
+	afterRoute : function(urlStr, urlParameters, payload) {
+		
+	},
+	notFound : function(urlStr) {
+		console.log('Whoops, ' + urlStr + ' did not match any routes.');
+	}
 });
 
 ```
+
+Note that these hooks will be called multiple times if you are using simultaneous routing. The first argument will contain the specific routing string.
 
 #### Nested Routes
 

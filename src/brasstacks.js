@@ -212,9 +212,11 @@
          * @param {object} [payload] - An object containing a custom payload to be pass through the route execution
          */
 
-        route : function(urlOrRouteId, payload, notFoundCb) {
+        route : function(urlOrRouteId, payload, hooks) {
 
             this.halted = false;
+
+            payload = payload || {};
 
             var splitUrlorId = urlOrRouteId.split('&');
 
@@ -232,9 +234,16 @@
                 }
 
                 if (route) {
-                    route.run(this, route.mapArgs(params), payload || {});
-                } else if (notFoundCb) {
-                    notFoundCb(splitUrlorId[i]);
+                    var mappedArgs = route.mapArgs(params);
+                    if (hooks && hooks.beforeRoute) {
+                        hooks.beforeRoute.apply(this, [splitUrlorId[i], mappedArgs, payload]);
+                    }
+                    route.run(this, mappedArgs, payload);
+                    if (hooks && hooks.afterRoute) {
+                        hooks.afterRoute.apply(this, [splitUrlorId[i], mappedArgs, payload]);
+                    }
+                } else if (hooks && hooks.notFound) {
+                    hooks.notFound.apply(this, [splitUrlorId[i]]);
                 }
 
             }

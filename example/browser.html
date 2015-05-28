@@ -55,8 +55,16 @@
     });
 
     window.onhashchange = function() {
-        bt.route(window.location.hash.substr(1), {}, function(str){
-            console.log('shiz!' + str);
+        bt.route(window.location.hash.substr(1), {}, {
+            beforeRoute : function(){
+                alert('before');
+            },
+            afterRoute : function() {
+                alert('after');
+            },
+            notFound : function() {
+                alert('not found');
+            }
         });
     };
 
