@@ -30,8 +30,9 @@
                     {
                         id : 'add',
                         url : '/add',
+                        runParentRoutes: false,
                         controller : function() {
-
+                            alert('ya2');
                         }
                     },
                     {
@@ -67,6 +68,8 @@
             }
         });
     };
+
+    bt.route(window.location.hash.substr(1));
 
 
 </script>

@@ -12,7 +12,6 @@ var bt = new BrassTacks({
             controller : function() {
                 console.log('dashboard');
             },
-            resetParentStack : true,
             routes : [
                 {
                     id : 'add',
@@ -20,7 +19,7 @@ var bt = new BrassTacks({
                     controller : function() {
                         console.log('add');
                     },
-                    runParentRoutes : true
+                    runParentRoutes : false
                 },
                 {
                     id : 'edit',

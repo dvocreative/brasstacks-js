@@ -17,8 +17,9 @@
 
 })(this, function() {
 
-    var BTRoute = function(config, parentStack) {
+    var BTRoute = function(config, parent, parentStack) {
 
+        this.parent = parent;
         this.parentStack = parentStack;
 
         this.children = [];
@@ -44,8 +45,8 @@
 
             if (typeof this.url === 'string') {
 
-                if (this.parentStack.length) {
-                    this.url = this.parentStack[this.parentStack.length-1].originalUrl + this.url;
+                if (this.parent) {
+                    this.url = this.parent.originalUrl + this.url;
                 }
 
                 this.originalUrl = this.url;
@@ -183,7 +184,7 @@
                 if (parent) {
                     stack.push(parent);
                 }
-                route = this._processRoute(routeConfig, ((typeof routeConfig.runParentRoutes !== 'undefined' && routeConfig.runParentRoutes === false) ? [] : stack));
+                route = this._processRoute(routeConfig, parent, ((typeof routeConfig.runParentRoutes !== 'undefined' && routeConfig.runParentRoutes === false) ? [] : stack));
             }
 
             //add children
@@ -280,9 +281,9 @@
          * @param {Object} [parentStack] - An array of references to all parents, ordered by oldest parent first
          */
 
-        _processRoute : function(config, parentStack) {
+        _processRoute : function(config, parent, parentStack) {
 
-            var route = new BTRoute(config, parentStack);
+            var route = new BTRoute(config, parent, parentStack);
 
             this.routes.push(route);
 
